@@ -2,6 +2,8 @@ import sys
 import pygame
 import pygame_menu
 
+pygame.init()
+surface = pygame.display.set_mode((600, 400))
 
 class StartPage():
     def set_difficulty(value, difficulty):
@@ -21,7 +23,5 @@ class StartPage():
 
 
 if __name__ == '__main__':
-    pygame.init()
-    surface = pygame.display.set_mode((600, 400))
     StartP = StartPage()
     StartP.menu.mainloop(surface)
