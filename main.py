@@ -10,7 +10,7 @@ class StartPage():
         # Do the job here !
         pass
 
-    def start_the_game():
+    def start_the_game(self):
         # Сюда писать поссылки на саму игру внутри или сам код
         pass
 
