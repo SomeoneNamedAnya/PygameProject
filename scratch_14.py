@@ -1,5 +1,5 @@
 import pygame, random
-
+FPS = 40
 horizontal_borders = pygame.sprite.Group()
 vertical_borders = pygame.sprite.Group()
 all_sprites = pygame.sprite.Group()
@@ -14,15 +14,17 @@ class Ball(pygame.sprite.Sprite):
         pygame.draw.circle(self.image, pygame.Color("red"),
                            (radius, radius), radius)
         self.rect = pygame.Rect(x, y, 2 * radius, 2 * radius)
-        self.vx = 0.0025
-        self.vy = 0.025
+        self.vx = 1
+        self.vy = 2
 
     def update(self):
         self.rect = self.rect.move(self.vx, self.vy)
         if pygame.sprite.spritecollideany(self, horizontal_borders):
+            print('*')
             self.vy = -self.vy
         if pygame.sprite.spritecollideany(self, vertical_borders):
             self.vx = -self.vx
+            print('/')
 
 
 class Border(pygame.sprite.Sprite):
@@ -49,23 +51,26 @@ if __name__ == '__main__':
     running = True
     ball = Ball(20, 100, 100)
     clock = pygame.time.Clock()
-    horizontal_borders.add(Border(5, 5, width - 5, 5))
-    horizontal_borders.add(Border(5, height - 5, width - 5, height - 5))
-    vertical_borders.add(Border(5, 5, 5, height - 5))
-    vertical_borders.add(Border(width - 5, 5, width - 5, height - 5))
+    Border(5, 5, width - 5, 5)
+    Border(5, height - 5, width - 5, height - 5)
+    Border(5, 5, 5, height - 5)
+    Border(width - 5, 5, width - 5, height - 5)
     x_pos = 100
     y_pos = 100
     while running:
+        clock.tick(FPS)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
+        all_sprites.update()
 
+        # Рендеринг
         screen.fill('black')
-        ball.update()
-
-        x_pos += ball.vx
-        y_pos += ball.vy
-
-        screen.blit(ball.image, (x_pos, y_pos))
-
+        all_sprites.draw(screen)
+        # После отрисовки всего, переворачиваем экран
         pygame.display.flip()
+
+
+
+
+
