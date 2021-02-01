@@ -19,6 +19,16 @@ class Table(pygame.sprite.Sprite):
                          (0, 0, 40, length))
         self.rect = pygame.Rect((180, 300, 40, length))
         self.add(table_border)
+        self.v = 0
+
+    def update(self):
+        self.rect = self.rect.move(self.v, 0)
+        if pygame.sprite.spritecollideany(self, horizontal_borders):
+            print('*')
+            self.v = 0
+        if pygame.sprite.spritecollideany(self, vertical_borders):
+            self.v = 0
+            print('/')
 
 
 class Ball(pygame.sprite.Sprite):
@@ -93,6 +103,21 @@ if __name__ == '__main__':
                 if ball.first_start is True:
                     ball.vy = -5
                     ball.first_start = False
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RIGHT:
+                    print('aasas')
+                    table.v = 2
+                if event.key == pygame.K_LEFT:
+                    print('aasas')
+                    table.v = -2
+            if event.type == pygame.KEYUP:
+                if event.key == pygame.K_RIGHT:
+                    print('aasas')
+                    table.v = 0
+                if event.key == pygame.K_LEFT:
+                    print('aasas')
+                    table.v = 0
+
         all_sprites.update()
 
         # Рендеринг
