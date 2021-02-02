@@ -1,4 +1,4 @@
-import pygame, random
+import pygame, math
 
 FPS = 40
 horizontal_borders = pygame.sprite.Group()
@@ -22,7 +22,9 @@ class Table(pygame.sprite.Sprite):
         self.v = 0
 
     def update(self):
+        global table_x
         self.rect = self.rect.move(self.v, 0)
+        table_x += self.v
         if pygame.sprite.spritecollideany(self, horizontal_borders):
             print('*')
             self.v = 0
@@ -45,6 +47,8 @@ class Ball(pygame.sprite.Sprite):
         self.vy = 0
 
     def update(self):
+        # print(self.vx, self.vy)
+        global table_x
         self.rect = self.rect.move(self.vx, self.vy)
         if pygame.sprite.spritecollideany(self, horizontal_borders):
             print('*')
@@ -53,14 +57,21 @@ class Ball(pygame.sprite.Sprite):
             self.vx = -self.vx
             print('/')
         if pygame.sprite.spritecollideany(self, table_border):
-            print(self.rect.x, self.rect.y)
-            self.vy = -self.vy
-            temp = lenght_of_table / 180
-            print(table_x + lenght_of_table / 2)
-            if self.rect.x < table_x + lenght_of_table / 2:
-                self.vx = -(table_x + lenght_of_table / 2 - self.rect.x) * temp
-            elif self.rect.x > table_x + lenght_of_table / 2:
-                self.vx = (self.rect.x - table_x + lenght_of_table / 2) * temp
+            print(self.rect.x, self.rect.y, table_x)
+            temp = lenght_of_table / 90
+            p_vx = min(lenght_of_table / 2, abs(self.rect.x - table_x - lenght_of_table / 2))
+            if self.rect.x - table_x - lenght_of_table / 2 < 0:
+                p_vx *= -1
+            p_vy = lenght_of_table / 2
+            if p_vy > 0:
+                p_vy *= -1
+            p_xy = math.sqrt(p_vx ** 2 + p_vy ** 2)
+            kf = 5 / p_xy
+            print(p_vy, p_xy, p_vx, kf)
+            self.vx = p_vx * kf
+            self.vy = p_vy * kf
+
+            print(self.vy, self.vx)
 
 
 class Border(pygame.sprite.Sprite):
@@ -88,10 +99,10 @@ if __name__ == '__main__':
     ball = Ball(15, 180, 100)
     table = Table(lenght_of_table)
     clock = pygame.time.Clock()
-    Border(5, 5, width - 5, 5)
-    Border(5, height - 5, width - 5, height - 5)
-    Border(5, 5, 5, height - 5)
-    Border(width - 5, 5, width - 5, height - 5)
+    Border(10, 10, width - 10, 10)
+    Border(10, height - 10, width - 10, height - 10)
+    Border(10, 10, 10, height - 10)
+    Border(width - 10, 10, width - 10, height - 10)
     x_pos = 100
     y_pos = 100
     while running:
