@@ -1,5 +1,15 @@
 import pygame, math
 
+import sys
+import pygame
+from moviepy.editor import *
+import pygame_menu, math
+
+pygame.init()
+surface = pygame.display.set_mode((1280, 720))
+song_start = pygame.mixer.Sound('Sounds/8bitlong.mp3')
+music_logic = 1
+size = width, height = 400, 400
 FPS = 40
 horizontal_borders = pygame.sprite.Group()
 vertical_borders = pygame.sprite.Group()
@@ -8,6 +18,35 @@ table_border = pygame.sprite.Group()
 lenght_of_table = 20
 table_x = 180
 table_y = 300
+flag = True
+life = 3
+
+
+def music_play():
+    song_start.play()
+    global music_logic
+    music_logic = 1
+
+
+def music_stop():
+    song_start.stop()
+    global music_logic
+    music_logic = 0
+
+
+def start_game():
+    start()
+
+
+class StartPage():
+    menu = pygame_menu.Menu(720, 1280, 'Arcanoid', theme=pygame_menu.themes.THEME_DARK)
+    menu.add_button('Музыка Вкл', music_play())
+    menu.add_button('Музыка Выкл', music_stop())
+    menu.add_label('')
+    menu.add_label('')
+    menu.add_button('Играть', start_game)
+    menu.add_label('')
+    menu.add_button('Выйти', pygame_menu.events.EXIT)
 
 
 class Table(pygame.sprite.Sprite):
@@ -49,10 +88,20 @@ class Ball(pygame.sprite.Sprite):
     def update(self):
         # print(self.vx, self.vy)
         global table_x
+        global height
+        global flag
         self.rect = self.rect.move(self.vx, self.vy)
         if pygame.sprite.spritecollideany(self, horizontal_borders):
             print('*')
-            self.vy = -self.vy
+            print(self.rect.y)
+            if self.rect.y > 355:
+                print('########################3')
+                # quit()
+                flag = False
+                self.vy = 0
+                self.vx = 0
+            else:
+                self.vy = -self.vy
         if pygame.sprite.spritecollideany(self, vertical_borders):
             self.vx = -self.vx
             print('/')
@@ -88,11 +137,12 @@ class Border(pygame.sprite.Sprite):
             self.rect = pygame.Rect(x1, y1, x2 - x1, 1)
 
 
-if __name__ == '__main__':
-
+def start():
+    global life
+    global flag
     pygame.init()
     pygame.display.set_caption('Жёлтый круг')
-    size = width, height = 400, 400
+
     screen = pygame.display.set_mode(size)
     screen.fill('black')
     running = True
@@ -128,7 +178,6 @@ if __name__ == '__main__':
                 if event.key == pygame.K_LEFT:
                     print('aasas')
                     table.v = 0
-
         all_sprites.update()
 
         # Рендеринг
@@ -136,3 +185,25 @@ if __name__ == '__main__':
         all_sprites.draw(screen)
         # После отрисовки всего, переворачиваем экран
         pygame.display.flip()
+        if flag is False:
+            if life > 0:
+                print(ball.rect.x, ball.rect.y, '+++++++++')
+                ball.rect = ball.rect.move(180 - ball.rect.x, 100 - ball.rect.y)
+                print(ball.rect.x, ball.rect.y, '+++++++++')
+                flag = True
+                life -= 1
+                ball.first_start = True
+
+            else:
+                print("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
+
+
+if __name__ == '__main__':
+    pygame.display.set_caption('Arcanoid')
+    clip = VideoFileClip(r"images/StartMovie.mp4")
+    clip.preview()
+    song_start.play()
+    pygame.display.set_mode((1280, 720))
+
+    StartP = StartPage()
+    StartP.menu.mainloop(surface)
