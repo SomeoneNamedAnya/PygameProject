@@ -20,7 +20,7 @@ table_x = 180
 table_y = 300
 flag = True
 life = 3
-f = open("now_level.txt", 'r', encoding="utf8")
+f = open("all_level/now_level.txt", 'r', encoding="utf8")
 now_level = int(f.read())
 
 
@@ -286,12 +286,12 @@ def start():
                 ReturnP.menu.mainloop(surface)
         if len(break_border) == 0:
             print('/*-*/*/*--*/**-*-*-*--')
-            f = open("now_level.txt", 'w', encoding="utf8")
+            f = open("all_level/now_level.txt", 'w', encoding="utf8")
             f.write(str(now_level + 1))
             f.close()
             now_level += 1
             if now_level == 3:
-                f = open("now_level.txt", 'w', encoding="utf8")
+                f = open("all_level/now_level.txt", 'w', encoding="utf8")
                 f.write(str(0))
                 f.close()
                 # окно Вы выйграли
