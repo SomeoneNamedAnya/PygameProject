@@ -1,12 +1,10 @@
-import pygame, math
-
-import sys
 import pygame
 from moviepy.editor import *
-import pygame_menu, math
+import pygame_menu
+import math
 
 pygame.init()
-surface = pygame.display.set_mode((1280, 720))
+surface = pygame.display.set_mode((800, 600))
 song_start = pygame.mixer.Sound('Sounds/8bitlong.mp3')
 music_logic = 1
 size = width, height = 400, 400
@@ -22,6 +20,8 @@ table_x = 180
 table_y = 300
 flag = True
 life = 3
+f = open("now_level.txt", 'r', encoding="utf8")
+now_level = int(f.read())
 
 
 def music_play():
@@ -40,15 +40,59 @@ def start_game():
     start()
 
 
-class StartPage():
-    menu = pygame_menu.Menu(720, 1280, 'Arcanoid', theme=pygame_menu.themes.THEME_DARK)
-    menu.add_button('Музыка Вкл', music_play())
-    menu.add_button('Музыка Выкл', music_stop())
-    menu.add_label('')
-    menu.add_label('')
-    menu.add_button('Играть', start_game)
-    menu.add_label('')
-    menu.add_button('Выйти', pygame_menu.events.EXIT)
+def first_level():
+    temp_x = 10
+    temp_y = 20
+    for i in range(8):
+        for j in range(0, 19, 1):
+            if j % 2 == i % 2:
+                Break(temp_x, temp_y)
+            temp_x += 20
+        temp_y += 20
+        temp_x = 10
+
+
+def second_level():
+    temp_x = 11
+    temp_y = 30
+    for j in range(6):
+        for i in range(18):
+            Break(temp_x, temp_y)
+            temp_x += 20 + 1
+        temp_x = 11
+        temp_y += 30
+
+
+def third_level():
+    temp_x = 0
+    temp_y = 5
+    map_level = [
+        [0, 0, 1, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 1, 0, 0],
+        [0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0],
+        [0, 1, 0, 1, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0],
+        [1, 0, 0, 0, 1, 0, 0, 1, 0, 1, 1, 0, 1, 0, 0, 1, 0, 0, 0, 1],
+        [0, 1, 0, 1, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0],
+        [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+        [0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0],
+        [0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0],
+        [0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0],
+        [0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0],
+        [0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    ]
+    for i in range(14):
+        for j in range(20):
+            if map_level[i][j] == 1:
+                Break(temp_x, temp_y)
+            temp_x += 20
+        temp_y += 20
+        temp_x = 0
+    Break(190, 115)
+
+
+next_level = [first_level, second_level, third_level]
 
 
 class Break(pygame.sprite.Sprite):
@@ -62,7 +106,6 @@ class Break(pygame.sprite.Sprite):
                          (0, 0, 20, 20))
         self.rect = pygame.Rect((x, y, 20, 20))
         self.add(break_border)
-        # list_of_break.append(self)
 
 
 class Table(pygame.sprite.Sprite):
@@ -81,11 +124,9 @@ class Table(pygame.sprite.Sprite):
         self.rect = self.rect.move(self.v, 0)
         table_x += self.v
         if pygame.sprite.spritecollideany(self, horizontal_borders):
-            print('*')
             self.v = 0
         if pygame.sprite.spritecollideany(self, vertical_borders):
             self.v = 0
-            print('/')
 
 
 class Ball(pygame.sprite.Sprite):
@@ -102,17 +143,11 @@ class Ball(pygame.sprite.Sprite):
         self.vy = 0
 
     def update(self):
-        # print(self.vx, self.vy)
-        global table_x
         global height
         global flag
         self.rect = self.rect.move(self.vx, self.vy)
         if pygame.sprite.spritecollideany(self, horizontal_borders):
-            print('*')
-            print(self.rect.y)
             if self.rect.y > 355:
-                print('########################3')
-                # quit()
                 flag = False
                 self.vy = 0
                 self.vx = 0
@@ -120,29 +155,20 @@ class Ball(pygame.sprite.Sprite):
                 self.vy = -self.vy
         if pygame.sprite.spritecollideany(self, vertical_borders):
             self.vx = -self.vx
-            print('/')
         if pygame.sprite.spritecollideany(self, table_border):
-            print(self.rect.x, self.rect.y, table_x)
-            temp = lenght_of_table / 90
-            p_vx = min(lenght_of_table / 2, abs(self.rect.x - table_x - lenght_of_table / 2))
-            if self.rect.x - table_x - lenght_of_table / 2 < 0:
-                p_vx *= -1
-            p_vy = lenght_of_table / 2
-            if p_vy > 0:
-                p_vy *= -1
-            p_xy = math.sqrt(p_vx ** 2 + p_vy ** 2)
-            kf = 5 / p_xy
-            print(p_vy, p_xy, p_vx, kf)
+            p_vx = min(lenght_of_table / 2, abs(self.rect.x + self.radius - table_x - lenght_of_table / 2))
+            p_vy = math.sqrt((lenght_of_table ** 2) / 2 - (lenght_of_table / 2) ** 2)
+            p_c = math.sqrt(p_vx ** 2 + p_vy ** 2)
+            kf = 5 / p_c
             self.vx = p_vx * kf
-            self.vy = p_vy * kf
-
-            print(self.vy, self.vx)
+            self.vy = p_vy * kf * (-1)
+            if self.rect.x + self.radius - table_x - lenght_of_table / 2 < 0:
+                self.vx *= -1
         if pygame.sprite.spritecollideany(self, break_border):
             gets_hit = pygame.sprite.spritecollideany(self, break_border)
-            print(gets_hit.x, gets_hit.y, self.rect.x, self.rect.y, '*****************')
-            if gets_hit.x <= self.rect.x and gets_hit.x + 20 >= self.rect.x:
+            if gets_hit.x <= self.rect.x <= gets_hit.x + 20:
                 self.vy = -self.vy
-            if gets_hit.y <= self.rect.y and gets_hit.y + 20 >= self.rect.y:
+            if gets_hit.y <= self.rect.y <= gets_hit.y + 20:
                 self.vx = -self.vx
             for some_sprite in break_border:
                 # print(some_sprite)
@@ -165,20 +191,33 @@ class Border(pygame.sprite.Sprite):
             self.rect = pygame.Rect(x1, y1, x2 - x1, 1)
 
 
-def first_level():
-    temp_x = 11
-    temp_y = 10
-    for j in range(5):
-        for i in range(18):
-            Break(temp_x, temp_y)
-            temp_x += 20 + 1
-        temp_x = 11
-        temp_y += 30
+class StartPage():
+    menu = pygame_menu.Menu(600, 800, 'Arcanoid', theme=pygame_menu.themes.THEME_DARK)
+    menu.add_button('Музыка Вкл', music_play())
+    menu.add_button('Музыка Выкл', music_stop())
+    menu.add_label('')
+    menu.add_label('')
+    menu.add_button('Играть', start_game)
+    menu.add_label('')
+    menu.add_button('Выйти', pygame_menu.events.EXIT)
+
+
+class ReturnPage():
+    menu = pygame_menu.Menu(600, 800, 'Arcanoid', theme=pygame_menu.themes.THEME_DARK)
+    menu.add_button('Музыка Вкл', music_play)
+    menu.add_button('Музыка Выкл', music_stop)
+    menu.add_label('')
+    menu.add_label('')
+    menu.add_button('Попробовать еще раз)', start_game)
+    menu.add_label('')
+    menu.add_button('Выйти', pygame_menu.events.EXIT)
 
 
 def start():
     global life
     global flag
+    global table_x
+    global now_level
     pygame.init()
     pygame.display.set_caption('Жёлтый круг')
 
@@ -192,9 +231,7 @@ def start():
     Border(10, height - 10, width - 10, height - 10)
     Border(10, 10, 10, height - 10)
     Border(width - 10, 10, width - 10, height - 10)
-    x_pos = 100
-    y_pos = 100
-    first_level()
+    next_level[now_level]()
     while running:
         clock.tick(FPS)
         for event in pygame.event.get():
@@ -208,55 +245,73 @@ def start():
                 if event.key == pygame.K_RIGHT:
                     if ball.first_start is True:
                         ball.vx = 2
-                    print('aasas')
                     table.v = 2
                 if event.key == pygame.K_LEFT:
                     if ball.first_start is True:
                         ball.vx = -2
-                    print('aasas')
                     table.v = -2
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_RIGHT:
                     if ball.first_start is True:
                         ball.vx = 0
-                    print('aasas')
                     table.v = 0
                 if event.key == pygame.K_LEFT:
                     if ball.first_start is True:
                         ball.vx = 0
-                    print('aasas')
                     table.v = 0
+        table_x = table.rect.x
         if ball.first_start is True:
             ball.rect = ball.rect.move(table.rect.x - ball.rect.x, 269 - ball.rect.y)
         all_sprites.update()
-
-        # Рендеринг
         screen.fill('black')
         all_sprites.draw(screen)
-        # После отрисовки всего, переворачиваем экран
         pygame.display.flip()
         if flag is False:
             if life > 0:
-                print(ball.rect.x, ball.rect.y, '+++++++++')
                 table.rect = table.rect.move(180 - table.rect.x, 0)
                 ball.rect = ball.rect.move(table.rect.x - ball.rect.x, 269 - ball.rect.y)
-                print(ball.rect.x, ball.rect.y, '+++++++++')
                 flag = True
                 life -= 1
                 ball.first_start = True
-
-
-
             else:
-                print("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
+                flag = True
+                ball.first_start = True
+                ball.rect = ball.rect.move(180 - ball.rect.x, 100 - ball.rect.y)
+                life = 3
+                ball.kill()
+                table.kill()
+                pygame.init()
+                pygame.display.set_mode((800, 600))
+                ReturnP = ReturnPage()
+                ReturnP.menu.mainloop(surface)
+        if len(break_border) == 0:
+            print('/*-*/*/*--*/**-*-*-*--')
+            f = open("now_level.txt", 'w', encoding="utf8")
+            f.write(str(now_level + 1))
+            f.close()
+            now_level += 1
+            if now_level == 3:
+                f = open("now_level.txt", 'w', encoding="utf8")
+                f.write(str(0))
+                f.close()
+                # окно Вы выйграли
+                # переход на вкладку с меню
+            else:
+                # вкладка следующий уровень (уровень 2 или 3 в обще n)
+                next_level[now_level]()
+            table.rect = table.rect.move(180 - table.rect.x, 0)
+            ball.rect = ball.rect.move(table.rect.x - ball.rect.x, 269 - ball.rect.y)
+            flag = True
+            life -= 1
+            ball.first_start = True
 
 
 if __name__ == '__main__':
     pygame.display.set_caption('Arcanoid')
-    clip = VideoFileClip(r"images/StartMovie.mp4")
+    clip = VideoFileClip(r"images/StartMovie86.mp4")
     clip.preview()
     song_start.play()
-    pygame.display.set_mode((1280, 720))
+    pygame.display.set_mode((800, 600))
 
     StartP = StartPage()
     StartP.menu.mainloop(surface)
